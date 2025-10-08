@@ -103,25 +103,26 @@
 
     footer { background: #1a1a1a; text-align: center; padding: 1rem; color: #777; }
 
-/* --- NEW ANIMATION STYLES --- */
+/* --- UPDATED SCROLL-REVEAL STYLES --- */
 
-    /* Initial state for elements that will animate */
-    .animate-me {
+    /* Initial state for elements that will animate (hidden and slightly offset) */
+    .scroll-reveal {
         opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        transform: translateY(30px);
+        transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                    transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    /* Final state for the animation */
-    .animate-me.in-view {
+    /* Animation state (visible and in final position) */
+    .scroll-reveal.visible {
         opacity: 1;
         transform: translateY(0);
     }
 
-    /* Delayed animation for sections (staggered effect) */
-    #about-section.in-view { transition-delay: 0.1s; }
-    #projects-section.in-view { transition-delay: 0.2s; }
-    #contact-section.in-view { transition-delay: 0.3s; }
+    /* Staggered delay for the Project cards */
+    .project:nth-child(1) { transition-delay: 0.1s; }
+    .project:nth-child(2) { transition-delay: 0.2s; }
+    .project:nth-child(3) { transition-delay: 0.3s; }
     
   </style>
 </head>
@@ -144,26 +145,26 @@
     <p>Creative Developer | Designer | Problem Solver</p>
   </header>
 
-  <section id="about-section" class="animate-me">
+  <section id="about-section" class="scroll-reveal">
     <h2>About Me</h2>
     <p>Write a short bio here about who you are and what you do.</p>
   </section>
 
-  <section id="projects-section" class="animate-me">
+  <section id="projects-section" class="scroll-reveal">
     <h2>Projects</h2>
     <div class="projects" id="projects">
-      <div class="project"><h3>Project One</h3><p>Description of your project.</p></div>
-      <div class="project"><h3>Project Two</h3><p>Description of your project.</p></div>
-      <div class="project"><h3>Project Three</h3><p>Description of your project.</p></div>
+      <div class="project scroll-reveal"><h3>Project One</h3><p>Description of your project.</p></div>
+      <div class="project scroll-reveal"><h3>Project Two</h3><p>Description of your project.</p></div>
+      <div class="project scroll-reveal"><h3>Project Three</h3><p>Description of your project.</p></div>
     </div>
   </section>
 
-  <section id="contact-section" class="animate-me">
+  <section id="contact-section" class="scroll-reveal">
     <h2>Contact</h2>
     <p>Email: <a href="mailto:you@example.com">you@example.com</a></p>
   </section>
 
-  <footer class="animate-me">
+  <footer class="scroll-reveal">
     <p>© 2025 Charlie James</p>
   </footer>
 
@@ -185,9 +186,16 @@
       isDown = true;
       startY = e.pageY - projects.offsetTop;
       scrollTop = projects.scrollTop;
+      projects.style.cursor = 'grabbing'; // Optional: change cursor on grab
     });
-    projects.addEventListener('mouseleave', () => isDown = false);
-    projects.addEventListener('mouseup', () => isDown = false);
+    projects.addEventListener('mouseleave', () => {
+      isDown = false;
+      projects.style.cursor = 'grab';
+    });
+    projects.addEventListener('mouseup', () => {
+      isDown = false;
+      projects.style.cursor = 'grab';
+    });
     projects.addEventListener('mousemove', (e) => {
       if (!isDown) return;
       e.preventDefault();
@@ -196,24 +204,29 @@
       projects.scrollTop = scrollTop - walk;
     });
 
-    // --- NEW ANIMATION JAVASCRIPT ---
-    // Simple page load animation for sections
+    // --- NEW SCROLL-REVEAL JAVASCRIPT (Intersection Observer) ---
+    const observerOptions = {
+      root: null, // relative to the viewport
+      rootMargin: '0px',
+      threshold: 0.1 // trigger when 10% of the element is visible
+    };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // Get all elements with the 'animate-me' class (sections and footer)
-        const elementsToAnimate = document.querySelectorAll('.animate-me');
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Add the 'visible' class when the element enters the viewport
+          entry.target.classList.add('visible');
+          // Stop observing the element once it's visible (optional)
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
 
-        // Since all sections are visible on load, just apply the 'in-view' class after a brief moment
-        // to let the page render first.
-        setTimeout(() => {
-            elementsToAnimate.forEach(el => {
-                // We use Intersection Observer for better performance in a full app,
-                // but for a quick page load animation, a simple loop is sufficient.
-                el.classList.add('in-view');
-            });
-        }, 50); // Small delay to ensure CSS transitions take effect
+    // Target all elements with the 'scroll-reveal' class
+    document.querySelectorAll('.scroll-reveal').forEach(el => {
+      observer.observe(el);
     });
-    // --- END NEW ANIMATION JAVASCRIPT ---
+    // --- END SCROLL-REVEAL JAVASCRIPT ---
   </script>
 </body>
 </html>

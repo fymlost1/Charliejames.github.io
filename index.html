@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Charlie James | Portfolio</title>
-  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -89,24 +88,44 @@
     }
     .projects::-webkit-scrollbar { display: none; }
     .project {
-  background: #1e1e1e;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  border-radius: 10px;
-  min-height: 750px;
-  font-size: 1.1rem;
-  user-select: none;   /* 🚫 disables text selection */
-  -webkit-user-select: none; /* Safari/Chrome */
-  -moz-user-select: none;    /* Firefox */
-  -ms-user-select: none;     /* IE/Edge */
-}
+      background: #1e1e1e;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 10px;
+      min-height: 750px;
+      font-size: 1.1rem;
+      user-select: none;   /* 🚫 disables text selection */
+      -webkit-user-select: none; /* Safari/Chrome */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* IE/Edge */
+    }
     .project h3 { color: #ff6b6b; }
 
     footer { background: #1a1a1a; text-align: center; padding: 1rem; color: #777; }
+
+/* --- NEW ANIMATION STYLES --- */
+
+    /* Initial state for elements that will animate */
+    .animate-me {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    /* Final state for the animation */
+    .animate-me.in-view {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Delayed animation for sections (staggered effect) */
+    #about-section.in-view { transition-delay: 0.1s; }
+    #projects-section.in-view { transition-delay: 0.2s; }
+    #contact-section.in-view { transition-delay: 0.3s; }
+    
   </style>
 </head>
 <body>
-  <!-- Side Menu -->
   <div class="side-menu" id="sideMenu">
     <h3>Navigation</h3>
     <a href="https://github.com/" target="_blank">GitHub</a>
@@ -116,7 +135,6 @@
   </div>
 
   <header>
-    <!-- Hamburger Icon -->
     <div class="hamburger" id="hamburger">
       <span></span>
       <span></span>
@@ -126,12 +144,12 @@
     <p>Creative Developer | Designer | Problem Solver</p>
   </header>
 
-  <section>
+  <section id="about-section" class="animate-me">
     <h2>About Me</h2>
     <p>Write a short bio here about who you are and what you do.</p>
   </section>
 
-  <section>
+  <section id="projects-section" class="animate-me">
     <h2>Projects</h2>
     <div class="projects" id="projects">
       <div class="project"><h3>Project One</h3><p>Description of your project.</p></div>
@@ -140,12 +158,12 @@
     </div>
   </section>
 
-  <section>
+  <section id="contact-section" class="animate-me">
     <h2>Contact</h2>
     <p>Email: <a href="mailto:you@example.com">you@example.com</a></p>
   </section>
 
-  <footer>
+  <footer class="animate-me">
     <p>© 2025 Charlie James</p>
   </footer>
 
@@ -177,6 +195,25 @@
       const walk = (y - startY) * 1.5;
       projects.scrollTop = scrollTop - walk;
     });
+
+    // --- NEW ANIMATION JAVASCRIPT ---
+    // Simple page load animation for sections
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get all elements with the 'animate-me' class (sections and footer)
+        const elementsToAnimate = document.querySelectorAll('.animate-me');
+
+        // Since all sections are visible on load, just apply the 'in-view' class after a brief moment
+        // to let the page render first.
+        setTimeout(() => {
+            elementsToAnimate.forEach(el => {
+                // We use Intersection Observer for better performance in a full app,
+                // but for a quick page load animation, a simple loop is sufficient.
+                el.classList.add('in-view');
+            });
+        }, 50); // Small delay to ensure CSS transitions take effect
+    });
+    // --- END NEW ANIMATION JAVASCRIPT ---
   </script>
 </body>
 </html>

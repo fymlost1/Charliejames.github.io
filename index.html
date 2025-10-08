@@ -4,229 +4,721 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Charlie James | Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJd/rOWp7kYc165tO9S3qQxG8c0VvP2X6tY9A4q/yXG8c0VvP2X6tY9A4q/yXG+3+M6F6K8J3k5D+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
+    /* VARIABLES (Restored Red-Pink Accent) */
+    :root {
+        --accent-color: #ff6b6b; /* Vibrant Red-Pink */
+        --secondary-color: #ffc2c2; /* Lighter Red */
+        --dark-bg: #121212;
+        --card-bg: #1e1e1e;
+        --page-transition-duration: 0.5s;
+    }
+
+    /* FIX: Universal box-sizing ensures 100% width respects padding/border */
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
       margin: 0;
-      background: #121212;
+      background: var(--dark-bg);
       color: #eaeaea;
       line-height: 1.6;
+      overflow-x: hidden; /* Prevent horizontal scroll during menu animation */
+    }
+    
+    /* Digital Flow Background */
+    body::before {
+        content: '';
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle, #0d0d0d 1px, transparent 1px); 
+        background-size: 50px 50px; opacity: 0.1; z-index: -1;
+        animation: digital-scan 30s linear infinite;
+    }
+    @keyframes digital-scan {
+        from { background-position: 0 0; }
+        to { background-position: 500px 500px; }
     }
 
-    header {
-      background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
-      color: #fff;
-      padding: 3rem 2rem;
-      text-align: center;
-      position: relative;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    /* --- ADDED: PRELOADER STYLES --- */
+    #preloader {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: var(--dark-bg);
+        z-index: 10000;
+        display: flex; justify-content: center; align-items: center;
+        font-family: 'VT323', monospace;
+        color: var(--accent-color);
+        font-size: 2rem;
+        opacity: 1;
+        transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
     }
-    header h1 { color: #ff6b6b; margin: 0; font-size: 2.5rem; }
-    header p { color: #ccc; font-size: 1.2rem; }
+    #preloader.hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+    .loader-text::after {
+        content: '_';
+        animation: blink-caret 1s step-end infinite;
+    }
+
+
+    /* Primary Content Area */
+    #contentWrapper {
+        min-height: calc(100vh - 80px); /* Ensure content fills viewport above footer */
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        transition: margin-left 0.3s ease;
+    }
+    
+    /* Global Section Styling */
+    section { padding: 2rem; max-width: 1000px; margin: auto; }
+    section h2 { 
+        color: var(--accent-color); border-bottom: 2px solid var(--accent-color); display: inline-block; 
+        font-family: 'VT323', monospace;
+    }
+    
+    /* HOME SCREEN STYLING */
+    .home-header {
+      background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
+      color: #fff; padding: 5rem 2rem; text-align: center; position: relative;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      min-height: calc(100vh - 12rem); /* Make it feel like a full screen lander */
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+    }
+    .home-header h1 { 
+        color: var(--accent-color); margin: 0; font-size: clamp(2.5rem, 8vw, 4rem); 
+        font-family: 'VT323', monospace;
+    }
+    .home-header p { 
+        color: var(--secondary-color); font-size: clamp(1.2rem, 3vw, 1.8rem); 
+        font-family: 'VT323', monospace;
+        margin-bottom: 2rem;
+    }
+    
+    /* Typewriter Effect (retained for home screen) */
+    .typewriter {
+      overflow: hidden; white-space: nowrap; margin: 0 auto; letter-spacing: .15em; width: 0;
+      animation: typing 2.5s steps(38, end) 0.5s forwards, blink-caret 0.75s step-end infinite 0.5s;
+      border-right: .15em solid var(--accent-color);
+    }
+    .home-header-wrapper { opacity: 0; transform: translateY(-20px); animation: header-fade-down 1s ease-out 0.5s forwards; }
+
+    @keyframes header-fade-down {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: var(--accent-color); }
+    }
+    
+    /* HOME PAGE NAVIGATION BUTTONS - NEW STYLES */
+    .home-nav {
+        margin-top: 3rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+        opacity: 0;
+        /* Delay fade-in slightly after the text animations */
+        animation: header-fade-down 1s ease-out 1.5s forwards; 
+    }
+    .home-button {
+        text-decoration: none;
+        /* All outlined by default */
+        color: var(--accent-color); 
+        background: transparent;
+        padding: 0.75rem 2rem;
+        border-radius: 4px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+        border: 2px solid var(--accent-color);
+    }
+    .home-button:hover {
+        /* Solid on hover */
+        background: var(--accent-color); 
+        color: #fff; 
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
 
 /* Hamburger */
     .hamburger {
-      position: fixed;   /* stays visible while scrolling */
-      top: 20px;
-      left: 20px;
-      width: 30px;
-      height: 22px;
-      cursor: pointer;
-      z-index: 2000;     /* above everything */
+      position: fixed; top: 30px; left: 30px; width: 30px; height: 22px; cursor: pointer; z-index: 99999; 
+      transition: all 0.3s ease; 
     }
     .hamburger span {
-      display: block;
-      height: 4px;
-      background: #ff6b6b;
-      margin: 5px 0;
-      border-radius: 2px;
+      display: block; height: 4px; background: var(--accent-color); margin: 5px 0; border-radius: 2px;
       transition: 0.3s;
     }
+    
+    /* Active state: Moves to the right corner of the open menu AND transforms to 'X' */
+    .hamburger.active {
+      left: 245px; /* Adjusted to 245px to be 5px inside the 250px wide menu */
+    }
+    
     /* Animate to X */
-    .hamburger.active span:nth-child(1) {
-      transform: rotate(45deg) translate(5px, 5px);
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+
+/* Menu Overlay (Scrim) */
+    .menu-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.7); 
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        z-index: 990; 
+        cursor: pointer;
     }
-    .hamburger.active span:nth-child(2) {
-      opacity: 0;
-    }
-    .hamburger.active span:nth-child(3) {
-      transform: rotate(-45deg) translate(6px, -6px);
+    .menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
     }
 
-    /* Side menu */
+
+/* Side menu */
     .side-menu {
-      position: fixed;
-      top: 0;
-      left: -250px;
-      width: 250px;
-      height: 100%;
-      background: #1e1e1e;
-      padding: 2rem 1rem;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.5);
-      transition: left 0.3s ease;
-      z-index: 1000;
-    }
-    .side-menu.active { left: 0; }
-    .side-menu h3 { color: #ff6b6b; }
-    .side-menu a {
-      display: block;
-      color: #eaeaea;
-      text-decoration: none;
-      margin: 1rem 0;
-    }
-    .side-menu a:hover { color: #ff6b6b; }
-
-    section { padding: 2rem; max-width: 1000px; margin: auto; }
-    section h2 { color: #ff6b6b; border-bottom: 2px solid #ff6b6b; display: inline-block; }
-
-    .projects {
-      max-height: 500px;
+      position: fixed; top: 0; left: -300px; 
+      width: 250px; height: 100%; 
+      background: var(--card-bg); padding: 2rem 1rem; box-shadow: 2px 0 10px rgba(0,0,0,0.5); 
+      transition: left 0.3s ease; z-index: 1000;
       overflow-y: auto;
-      cursor: grab;
-      scrollbar-width: none;
     }
-    .projects::-webkit-scrollbar { display: none; }
-    .project {
-      background: #1e1e1e;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      border-radius: 10px;
-      min-height: 750px;
-      font-size: 1.1rem;
-      user-select: none;   /* 🚫 disables text selection */
-      -webkit-user-select: none; /* Safari/Chrome */
-      -moz-user-select: none;    /* Firefox */
-      -ms-user-select: none;     /* IE/Edge */
+    .side-menu.active { left: 0; } 
+    .side-menu h3 { color: var(--accent-color); }
+    .side-menu a {
+      display: block; color: #eaeaea; text-decoration: none; padding: 0.5rem 0; margin: 0.5rem 0;
+      opacity: 0; transform: translateX(-10px); transition: opacity 0.5s ease-out, transform 0.5s ease-out;
     }
-    .project h3 { color: #ff6b6b; }
+    .side-menu a:hover { color: var(--accent-color); transform: translateX(5px); }
+    .side-menu.active a { opacity: 1; transform: translateX(0); }
+    /* Staggered animation for links */
+    .side-menu.active a:nth-child(1) { transition-delay: 0.2s; } 
+    .side-menu.active a:nth-child(2) { transition-delay: 0.3s; }
+    .side-menu.active a:nth-child(3) { transition-delay: 0.4s; } 
+    .side-menu.active a:nth-child(4) { transition-delay: 0.5s; }
+    .side-menu.active a:nth-child(6) { transition-delay: 0.7s; } 
+    .side-menu.active a:nth-child(7) { transition-delay: 0.8s; } 
+    .side-menu.active a:nth-child(8) { transition-delay: 0.9s; }
+    .side-menu.active a:nth-child(9) { transition-delay: 1.0s; }
 
+
+    /* Skills Grid */
+    .skills-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; padding-top: 1rem;
+    }
+    .skill-card {
+      background: var(--card-bg); padding: 1.5rem; border-radius: 8px; text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease; font-size: 1rem; cursor: default;
+    }
+    /* ENHANCED GLOW HOVER - Red Glow */
+    .skill-card:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 0 25px rgba(255, 107, 107, 0.4); 
+    }
+    .skill-card strong { color: var(--accent-color); display: block; margin-top: 0.5rem; }
+
+    /* PROJECTS & SPOTLIGHT INTERACTION */
+    .projects-container {
+      max-height: 500px; overflow-y: auto; cursor: grab; scrollbar-width: none; transition: all 0.5s ease;
+    }
+    .projects-container::-webkit-scrollbar { display: none; }
+    .project {
+      background: var(--card-bg); padding: 2rem; margin-bottom: 2rem; border-radius: 10px;
+      min-height: 750px; font-size: 1.1rem; user-select: none; transition: all 0.3s ease;
+    }
+    .project h3 { color: var(--accent-color); }
+    
+    /* PROJECT SPOTLIGHT CSS - Red Glow */
+    .projects-container:hover .project {
+        opacity: 0.4; filter: blur(1px);
+    }
+    .projects-container .project:hover {
+        opacity: 1.0; filter: none;
+        box-shadow: 0 0 30px rgba(255, 107, 107, 0.6); 
+        transform: scale(1.01);
+    }
+
+    /* --- CONTACT FORM STYLING --- */
+    .contact-form {
+        display: grid;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .contact-form input[type="text"],
+    .contact-form input[type="email"],
+    .contact-form textarea {
+        width: 100%;
+        padding: 1rem;
+        background: var(--card-bg);
+        border: 1px solid #333;
+        color: #eaeaea;
+        border-radius: 4px;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        transition: border-color 0.2s;
+    }
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+    }
+    .contact-form textarea {
+        resize: vertical;
+        min-height: 150px;
+    }
+    /* Button is now guaranteed to be 100% of the grid column thanks to box-sizing: border-box */
+    .submit-button {
+        display: block; 
+        width: 100%;    
+        padding: 0.75rem 2rem;
+        background: var(--accent-color);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+        text-align: center;
+    }
+    .submit-button:hover {
+        background: #ff8c8c;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+    /* Status message style */
+    #contact-status {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 4px;
+        font-weight: 600;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+    }
+    #contact-status.success {
+        background-color: rgba(107, 255, 107, 0.1);
+        color: #6bff6b;
+        opacity: 1;
+    }
+    #contact-status.error {
+        background-color: rgba(255, 107, 107, 0.1);
+        color: var(--accent-color);
+        opacity: 1;
+    }
+    
     footer { background: #1a1a1a; text-align: center; padding: 1rem; color: #777; }
 
-/* --- UPDATED SCROLL-REVEAL STYLES --- */
-
-    /* Initial state for elements that will animate (hidden and slightly offset) */
-    .scroll-reveal {
+    /* --- BACK TO TOP BUTTON --- */
+    #backToTop {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--accent-color);
+        color: var(--dark-bg);
+        width: 45px; height: 45px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 45px;
+        font-size: 1.2rem;
+        cursor: pointer;
         opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-                    transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+        z-index: 900;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
-
-    /* Animation state (visible and in final position) */
-    .scroll-reveal.visible {
+    #backToTop.show {
         opacity: 1;
-        transform: translateY(0);
+        visibility: visible;
+        transform: translateY(-5px);
+    }
+    #backToTop:hover {
+        background: #ff8c8c;
     }
 
-    /* Staggered delay for the Project cards */
-    .project:nth-child(1) { transition-delay: 0.1s; }
-    .project:nth-child(2) { transition-delay: 0.2s; }
-    .project:nth-child(3) { transition-delay: 0.3s; }
+    /* --- PAGE TRANSITION STYLES --- */
+    .page-content {
+        opacity: 0; transform: translateY(20px);
+        transition: opacity var(--page-transition-duration) ease-out, 
+                    transform var(--page-transition-duration) ease-out;
+    }
+    .page-content.visible { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
     
   </style>
 </head>
 <body>
+  
+  <div id="preloader">
+    <span class="loader-text">LOADING PORTFOLIO</span>
+  </div>
+
+  <div class="hamburger" id="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  
+  <div class="menu-overlay" id="menuOverlay"></div>
+
   <div class="side-menu" id="sideMenu">
     <h3>Navigation</h3>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+    <hr style="border: none; border-top: 1px solid #333; margin: 1rem 0;">
     <a href="https://github.com/" target="_blank">GitHub</a>
     <a href="https://linkedin.com/" target="_blank">LinkedIn</a>
     <a href="https://twitter.com/" target="_blank">Twitter</a>
-    <a href="https://dribbble.com/" target="_blank">Dribbble</a>
+    <a href="https://artstation.com/" target="_blank">ArtStation</a> 
   </div>
 
-  <header>
-    <div class="hamburger" id="hamburger">
-      <span></span>
-      <span></span>
-      <span></span>
+  <div id="contentWrapper">
     </div>
-    <h1>Charlie James</h1>
-    <p>Creative Developer | Designer | Problem Solver</p>
-  </header>
 
-  <section id="about-section" class="scroll-reveal">
-    <h2>About Me</h2>
-    <p>Write a short bio here about who you are and what you do.</p>
-  </section>
-
-  <section id="projects-section" class="scroll-reveal">
-    <h2>Projects</h2>
-    <div class="projects" id="projects">
-      <div class="project scroll-reveal"><h3>Project One</h3><p>Description of your project.</p></div>
-      <div class="project scroll-reveal"><h3>Project Two</h3><p>Description of your project.</p></div>
-      <div class="project scroll-reveal"><h3>Project Three</h3><p>Description of your project.</p></div>
-    </div>
-  </section>
-
-  <section id="contact-section" class="scroll-reveal">
-    <h2>Contact</h2>
-    <p>Email: <a href="mailto:you@example.com">you@example.com</a></p>
-  </section>
-
-  <footer class="scroll-reveal">
+  <footer class="page-content">
     <p>© 2025 Charlie James</p>
   </footer>
+  
+  <div id="backToTop" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">
+    <i class="fas fa-chevron-up"></i>
+  </div>
 
   <script>
-    // Hamburger toggle
+    // Constants for DOM elements
     const hamburger = document.getElementById('hamburger');
     const sideMenu = document.getElementById('sideMenu');
+    const menuOverlay = document.getElementById('menuOverlay'); 
+    const contentWrapper = document.getElementById('contentWrapper');
+    const footer = document.querySelector('footer');
+    
+    // ADDED: Preloader and Back to Top
+    const preloader = document.getElementById('preloader');
+    const backToTop = document.getElementById('backToTop');
 
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('active');
-      sideMenu.classList.toggle('active');
-    });
 
-    // Click-and-drag scroll for projects
-    const projects = document.getElementById('projects');
-    let isDown = false, startY, scrollTop;
-
-    projects.addEventListener('mousedown', (e) => {
-      isDown = true;
-      startY = e.pageY - projects.offsetTop;
-      scrollTop = projects.scrollTop;
-      projects.style.cursor = 'grabbing'; // Optional: change cursor on grab
-    });
-    projects.addEventListener('mouseleave', () => {
-      isDown = false;
-      projects.style.cursor = 'grab';
-    });
-    projects.addEventListener('mouseup', () => {
-      isDown = false;
-      projects.style.cursor = 'grab';
-    });
-    projects.addEventListener('mousemove', (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      const y = e.pageY - projects.offsetTop;
-      const walk = (y - startY) * 1.5;
-      projects.scrollTop = scrollTop - walk;
-    });
-
-    // --- NEW SCROLL-REVEAL JAVASCRIPT (Intersection Observer) ---
-    const observerOptions = {
-      root: null, // relative to the viewport
-      rootMargin: '0px',
-      threshold: 0.1 // trigger when 10% of the element is visible
+    // --- PAGE CONTENT TEMPLATES (UPDATED) ---
+    const PAGE_TEMPLATES = {
+        'home': `
+            <div class="home-header">
+                <div class="home-header-wrapper">
+                    <h1>Charlie James</h1>
+                    <p class="typewriter">Games Designer | 3D Modeler | Unreal Engine Developer</p>
+                    <div class="home-nav">
+                        <a href="#projects" class="home-button">View Projects</a>
+                        <a href="#skills" class="home-button">My Skills</a>
+                        <a href="#contact" class="home-button">Contact Me</a>
+                        <a href="#about" class="home-button">Read About Me</a>
+                    </div>
+                </div>
+            </div>
+        `,
+        'about': `
+            <section id="about-section">
+                <h2>About Me</h2>
+                <p>Hi my names charlie ive been a studying games development at Burton south derbyshire collage for a year now, i am currently doing my second year. I am a very passionate games developer who is currently working on aproject called nut job you can learn more in the projects section, I have been very passionate about games and the development of them since i was around 6, The past decade of my life has been foucsed on games and i strive towards a career around them. <p>
+                <p></p>
+            </section>
+        `,
+        'skills': `
+            <section id="skills-section">
+                <h2>Tools & Skills</h2>
+                <div class="skills-grid">
+                    <div class="skill-card">
+                        <i class="fa-solid fa-gamepad" style="color:var(--accent-color); margin-bottom: 0.5rem; font-size: 1.5rem;"></i>
+                        <strong>Game Engine</strong>Unreal Engine (Blueprints & C++ Basics), Unity (C# Basics)
+                    </div>
+                    <div class="skill-card">
+                        <i class="fa-solid fa-cube" style="color:var(--accent-color); margin-bottom: 0.5rem; font-size: 1.5rem;"></i>
+                        <strong>3D Modeling</strong>Blender (Modeling, Sculpting, UV Unwrapping), Low-Poly/High-Poly
+                    </div>
+                    <div class="skill-card">
+                        <i class="fa-solid fa-palette" style="color:var(--accent-color); margin-bottom: 0.5rem; font-size: 1.5rem;"></i>
+                        <strong>Texturing & Baking</strong>Substance Painter, Photoshop, Normal Map Generation
+                    </div>
+                    <div class="skill-card">
+                        <i class="fa-solid fa-map-marked-alt" style="color:var(--accent-color); margin-bottom: 0.5rem; font-size: 1.5rem;"></i>
+                        <strong>Design & Level Design</strong>Core Gameplay Loop, Prototyping, Documentation, Environment Blocking
+                    </div>
+                    <div class="skill-card">
+                        <i class="fa-solid fa-code" style="color:var(--accent-color); margin-bottom: 0.5rem; font-size: 1.5rem;"></i>
+                        <strong>Scripting</strong>Unreal Engine Blueprints, Python (Blender Automation), C++ (Basic UE)
+                    </div>
+                    <div class="skill-card">
+                        <i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-color); margin-bottom: 0.5rem; font-size: 1.5rem;"></i>
+                        <strong>Version Control</strong>Git, Perforce, Project Management
+                    </div>
+                </div>
+            </section>
+        `,
+        'projects': `
+            <section id="projects-section">
+                <h2>Projects</h2>
+                <div class="projects-container" id="projects-container">
+                    <div class="project">
+                        <h3>Project One: Stylized Modular Environment</h3>
+                        <p>A full-scale, playable environment built entirely within **Unreal Engine 5**. I was responsible for the modular asset design, lighting, and post-processing setup. All unique props were modeled and textured, focusing on an optimized workflow for baking high-resolution details from **Blender** onto low-poly meshes. Includes custom material shaders built with the Material Editor.</p>
+                    </div>
+                    <div class="project">
+                        <h3>Project Two: Character Asset Pipeline</h3>
+                        <p>A detailed character asset completed from concept to final integration. Modeled and sculpted in **Blender**, textured using **Substance Painter**, and rigged/animated for in-engine use. This project demonstrates proficiency in PBR texturing workflows, topology optimization for deformation, and integration using Unreal's skeletal mesh system.</p>
+                    </div>
+                    <div class="project">
+                        <h3>Project Three: Interactive Blueprint Prototype</h3>
+                        <p>A functional **First-Person Prototype** developed in **Unreal Engine** focusing on core gameplay mechanics like resource gathering, inventory, and weapon handling. The project is driven primarily by **Blueprints**, showcasing clean, efficient node logic and state machine implementation for interactive objects and player actions.</p>
+                    </div>
+                </div>
+            </section>
+        `,
+        'contact': `
+            <section id="contact-section">
+                <h2>Contact</h2>
+                <p>I'm currently available for contract work and collaborative game development projects. Send a message to discuss potential roles or opportunities!</p>
+                <form id="contactForm" class="contact-form" action="https://formspree.io/f/mwprnzeo" method="POST">
+                    <input type="text" name="name" placeholder="Your Name" required>
+                    <input type="email" name="_replyto" placeholder="Your Email" required>
+                    <textarea name="message" placeholder="Your Message" required></textarea>
+                    <button type="submit" class="submit-button">Send Message</button>
+                    <div id="contact-status"></div>
+                </form>
+            </section>
+        `
     };
 
-    const observer = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // Add the 'visible' class when the element enters the viewport
-          entry.target.classList.add('visible');
-          // Stop observing the element once it's visible (optional)
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
+    // --- HAMBURGER & MENU LOGIC ---
+    const toggleMenu = () => {
+        sideMenu.classList.toggle('active');
+        hamburger.classList.toggle('active');
+        menuOverlay.classList.toggle('active'); // Toggle overlay visibility
+    };
 
-    // Target all elements with the 'scroll-reveal' class
-    document.querySelectorAll('.scroll-reveal').forEach(el => {
-      observer.observe(el);
+    hamburger.addEventListener('click', toggleMenu);
+    menuOverlay.addEventListener('click', toggleMenu); // Close menu by clicking the overlay
+
+    // Close menu when a link is clicked
+    sideMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            // Wait for the route to change before closing the menu
+            setTimeout(toggleMenu, 100); 
+        });
     });
-    // --- END SCROLL-REVEAL JAVASCRIPT ---
+
+    // --- CONTACT FORM SUBMISSION LOGIC ---
+    const setupContactForm = () => {
+        const form = document.getElementById('contactForm');
+        const status = document.getElementById('contact-status');
+
+        if (!form) return;
+
+        const handleSubmit = async (event) => {
+            event.preventDefault();
+            
+            // Clear previous status and show loading/submitting state
+            status.classList.remove('success', 'error');
+            status.style.opacity = 0;
+            status.innerHTML = 'Sending...';
+
+            // Use FormData to easily grab all form data
+            const data = new FormData(event.target);
+            
+            try {
+                const response = await fetch(event.target.action, {
+                    method: form.method,
+                    body: data,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    status.innerHTML = '<i class="fa-solid fa-check"></i> Message Sent Successfully!';
+                    status.classList.add('success');
+                    form.reset(); // Clear the form fields on success
+                } else {
+                    // Handle non-200 responses (e.g., spam protection triggered)
+                    status.innerHTML = '<i class="fa-solid fa-xmark"></i> Oops! There was an issue submitting your form. Please try again.';
+                    status.classList.add('error');
+                }
+            } catch (error) {
+                // Handle network errors
+                status.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error: Could not reach the server.';
+                status.classList.add('error');
+            }
+            
+            // Fade in the status message
+            setTimeout(() => { status.style.opacity = 1; }, 50);
+        };
+
+        form.addEventListener('submit', handleSubmit);
+
+        // Cleanup function for routing
+        return () => {
+            form.removeEventListener('submit', handleSubmit);
+        };
+    };
+
+    // --- ROUTING & PAGE RENDERING LOGIC ---
+
+    const setupProjectsDragScroll = () => {
+        const projectsContainer = document.getElementById('projects-container');
+        if (!projectsContainer) return; // Exit if not on the projects page
+
+        let isDown = false, startY, scrollTop;
+
+        const handleMouseDown = (e) => {
+            isDown = true;
+            startY = e.pageY - projectsContainer.offsetTop;
+            scrollTop = projectsContainer.scrollTop;
+            projectsContainer.style.cursor = 'grabbing';
+        };
+        const handleMouseLeave = () => {
+            isDown = false;
+            projectsContainer.style.cursor = 'grab';
+        };
+        const handleMouseUp = () => {
+            isDown = false;
+            projectsContainer.style.cursor = 'grab';
+        };
+        const handleMouseMove = (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const y = e.pageY - projectsContainer.offsetTop;
+            const walk = (y - startY) * 1.5;
+            projectsContainer.scrollTop = scrollTop - walk;
+        };
+
+        // Attach listeners to the container
+        projectsContainer.addEventListener('mousedown', handleMouseDown);
+        projectsContainer.addEventListener('mouseleave', handleMouseLeave);
+        projectsContainer.addEventListener('mouseup', handleMouseUp);
+        projectsContainer.addEventListener('mousemove', handleMouseMove);
+
+        // Cleanup function 
+        return () => {
+            projectsContainer.removeEventListener('mousedown', handleMouseDown);
+            projectsContainer.removeEventListener('mouseleave', handleMouseLeave);
+            projectsContainer.removeEventListener('mouseup', handleMouseUp);
+            projectsContainer.removeEventListener('mousemove', handleMouseMove);
+        };
+    };
+
+    let cleanupProjectScroll = null;
+    let cleanupContactForm = null;
+
+    const renderPage = (pageName) => {
+        // Stop any previous page-specific listeners
+        if (cleanupProjectScroll) {
+            cleanupProjectScroll();
+            cleanupProjectScroll = null;
+        }
+        if (cleanupContactForm) {
+            cleanupContactForm();
+            cleanupContactForm = null;
+        }
+
+        const template = PAGE_TEMPLATES[pageName];
+        if (!template) {
+            console.error(`Page template for "${pageName}" not found.`);
+            // Fallback to home page
+            window.location.hash = '#home';
+            return;
+        }
+
+        // 1. Initial State: Clear current content
+        contentWrapper.innerHTML = '';
+        
+        // 2. Insert new content
+        contentWrapper.insertAdjacentHTML('beforeend', `<div class="page-content">${template}</div>`);
+        const newPage = contentWrapper.querySelector('.page-content');
+        
+        // 3. Force reflow/repaint for CSS transition to work
+        void newPage.offsetWidth; 
+
+        // 4. Final State: Fade in new content after a short delay
+        setTimeout(() => {
+            newPage.classList.add('visible');
+            footer.classList.add('visible');
+        }, 50);
+
+        // 5. Run page-specific setup
+        if (pageName === 'projects') {
+            cleanupProjectScroll = setupProjectsDragScroll();
+        } else if (pageName === 'contact') {
+            // Setup the new contact form handler
+            cleanupContactForm = setupContactForm();
+        }
+
+        // 6. Update document title
+        const titleMap = {
+            'home': 'Home',
+            'about': 'About Me',
+            'skills': 'Skills',
+            'projects': 'Projects',
+            'contact': 'Contact'
+        };
+        document.title = `Charlie James | ${titleMap[pageName]}`;
+
+        // 7. Update active state in side menu
+        sideMenu.querySelectorAll('a').forEach(a => {
+            if (a.getAttribute('href') === `#${pageName}`) {
+                a.style.color = 'var(--accent-color)';
+            } else {
+                a.style.color = '#eaeaea';
+            }
+        });
+    };
+
+    // --- INITIALIZATION ---
+
+    const handleRoute = () => {
+        // Get the hash (e.g., '#about') and remove the '#'
+        const hash = window.location.hash.substring(1); 
+        // Use 'home' as the default page if the hash is empty or invalid
+        const page = hash || 'home'; 
+        renderPage(page);
+    };
+
+    // Listen for hash changes (when user clicks links or uses back/forward)
+    window.addEventListener('hashchange', handleRoute);
+
+    // Initial load and Preloader logic
+    window.addEventListener('load', () => {
+        // HIDE PRELOADER (after a slight delay for aesthetic)
+        setTimeout(() => {
+            preloader.classList.add('hidden');
+        }, 300);
+
+        // If no hash is present, set it to home to trigger the initial load
+        if (!window.location.hash) {
+            window.location.hash = '#home';
+        } else {
+            handleRoute();
+        }
+    });
+
+    // ADDED: BACK TO TOP SCROLL LISTENER
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) { // Show after scrolling 400px
+            backToTop.classList.add('show');
+        } else {
+            backToTop.classList.remove('show');
+        }
+    });
+
   </script>
 </body>
-</html
+</html>
